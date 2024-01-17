@@ -1,23 +1,9 @@
 import axios from 'axios';
 
-// Exempel på data vi ska hämta ut -------------
-// "results": [
-//   {
-//     "name": "bulbasaur",
-//     "url": "https://pokeapi.co/api/v2/pokemon/1/"
-//   },
-//   {
-//     "name": "ivysaur",
-//     "url": "https://pokeapi.co/api/v2/pokemon/2/"
-//   },
-//   {
-
 // Hämtningsfunktion
 async function getPokemonList() {
   try {
-    const response = await axios.get(
-      'https://pokeapi.co/api/v2/pokemon?limit=20'
-    );
+    const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=20');
     // console.log(response.data.results);
     return response.data.results;
   } catch (err) {
@@ -28,9 +14,7 @@ async function getPokemonList() {
 
 async function getPokemonDetails(pokemonName) {
   try {
-    const response = await axios.get(
-      `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
-    );
+    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
     // console.log(response.data);
     const data = response.data;
     // console.log(response.data.base_experience)
@@ -64,11 +48,9 @@ async function renderPokemonCards(pokemonList) {
   // console.log(data);
   const cardsContainer = document.querySelector('.pokemon-cards-container');
 
-  const completePokeonList = await Promise.all(
-    pokemonList.map(async (pokemon, index) => {
-      const { abilities, base_experience } = await getPokemonDetails(
-        pokemon.name
-      ); // destructering
+  const completePokeonList = await Promise.all(pokemonList.map(async (pokemon, index) => {
+      const { abilities, base_experience } = await getPokemonDetails(pokemon.name); // destructering
+      
       return {
         // samla komplett info om en pokemon(name, index, abilites, base_exp)
         name: pokemon.name,
@@ -76,35 +58,32 @@ async function renderPokemonCards(pokemonList) {
         base_experience: base_experience,
         index: index,
       };
+    
     })
   );
 
-  console.log(completePokeonList);
+  console.log('Kompletta pokemon-listan', completePokeonList);
 
   //Filtrera,sortera...
 
-  cardsContainer.innerHTML = completePokeonList
-    .map((pokemon, index) => {
-      return `
+  cardsContainer.innerHTML = completePokeonList.map((pokemon, index) => {
+      
+    return `
   <article class="pokemon-card">
-   <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-     index + 1
-   }.png"> 
+   <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${index + 1}.png"> 
    <h2>${pokemon.name}</h2>
    <p>Abilities: ${pokemon.abilities.join(', ')}</p> 
    <p>Base Experience: ${pokemon.base_experience}</p>
-   </article>
-   `;
-    })
-    .join('');
+   </article>`;}).join('');
 }
 
 async function main() {
   const pokemonList = await getPokemonList();
   // Köra function som renderar ut pokemon-card data.
   renderPokemonCards(pokemonList);
-  const data = await getPokemonDetails('pikachu');
+  // const data = await getPokemonDetails('pikachu');
   // console.log('pokemon details', data);
+  
 }
 
 main();
